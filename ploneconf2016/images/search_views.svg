@@ -1,0 +1,11 @@
+<svg width="746px" height="523px" viewBox="-130 -44 746 523" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <g stroke="none" fill="none">
+        <image x="85" y="-43" width="530" height="288" xlink:href="../images/search_list.png"></image>
+    </g>
+    <g stroke="none" fill="none">
+        <image x="220" y="262" width="351" height="216" xlink:href="../images/search_map.png"></image>
+    </g>
+    <g stroke="none" fill="none">
+        <image x="-129" y="39" width="335" height="413" xlink:href="../images/search_calendar.png"></image>
+    </g>
+</svg>

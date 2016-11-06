@@ -1,0 +1,319 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml"><head><title>Greater than the sum of the parts</title><meta name="generator" content="Hovercraft! 1.0 http://regebro.github.com/hovercraft"></meta><link rel="stylesheet" href="css/hovercraft.css" media="all"></link><link rel="stylesheet" href="css/impressConsole.css" media="all"></link><link rel="stylesheet" href="css/highlight.css" media="all"></link><link rel="stylesheet" href="slideshow.css" media="screen,projection"></link></head><body class="impress-not-supported"><div id="impress" data-transition-duration="300"><div class="step step-level-1" step="0" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="0" data-y="0" data-z="0"><h1 id="greater-than-the-sum-of-the-parts">Greater than the sum of the parts</h1><p>Lessons from integrating Pyramid, React, and Plone</p><p>(and elasticsearch, and Salesforce, and a payment gateway, and...)</p><div class="line-block"><br></br></div><h2 id="david-glick">David Glick</h2><h3 id="plone-conference-2016-boston">Plone Conference 2016, Boston</h3><div class="notes"><ul><li>I'm David Glick. I've been a part of the Plone community for 9 years
+and am currently doing freelance work with Jazkarta and OddBird.</li></ul></div></div><div class="step step-level-1" step="1" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="1600" data-y="0" data-z="0"><img src="images/wta_50.jpg"></img><div class="notes"><p>This is a talk about things we learned while building
+a Volunteer Management System
+for the Washington Trails Association.</p><p>WTA is a large nonprofit in Washington state
+which maintains trails, advocates for their protection, and promotes hiking.
+They are celebrating their 50th anniversary this year.</p><p>The project was a partnership between Jazkarta and Percolator Consulting.</p></div></div><div class="step step-level-1" step="2" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="3200" data-y="0" data-z="0"><h1 id="complexity">Complexity</h1><img src="images/toycar.jpg" class="left"></img><img src="images/legocar.jpg" class="right"></img><div class="notes"><p>This is a talk about building a complex system out of smaller parts.
+I titled the talk "greater than the sum of the parts"
+which makes it sound like this is a clear win.
+You take a bunch of run-of-the-mill pieces and end up with something magical.
+But in reality, there are tradeoffs...</p><p>A simple system is like the toy car on the left:
+unified, straightforward, easier to test and reason about.
+But There's Only One Way To Do It, not very flexible.</p><p>A complex system is more like the lego car: flexible, not locked in.
+More potential for failure OR success,
+and it can be a puzzle to put it together.</p></div></div><div class="step step-level-1" step="3" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="4800" data-y="0" data-z="0"><h1 id="the-tools-matter">The tools matter</h1><img src="images/plone.png" class="left"></img><img src="images/pyramid_logo.png" class="right"></img><img src="images/salesforce_logo.jpg" class="left"></img><img src="images/react_logo.png" class="right"></img><div class="notes"><p>Part of the thesis of this talk is also that the tools matter.</p><p>The choices we make about tools have an impact on how successful we are
+and on how much fun we have using them.</p><p>So while I said "greater than the sum of the parts",
+the point is that even though building something complex
+is inevitably painful, using really good parts can help
+make up for that.</p><p>That also means this is a talk for developers.
+I'm going to talk about the architecture we used,
+and then I'm going to show off Pyramid and React
+and talk about how they were a good fit for the project.</p></div></div><div class="step step-level-1 full" step="4" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="6400" data-y="0" data-z="0"><img src="images/wta.org.png"></img><div class="notes"><p>This is the WTA website, built in Plone.</p><p>It's a very popular resource for hikers in Washington state.
+They can search for hikes by different characteristics,
+save hikes they've completed, and add trip reports.</p></div></div><div class="step step-level-1" step="5" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="8000" data-y="0" data-z="0"><h1 id="wta-org-salesforce-vols-wta-org">wta.org + Salesforce + vols.wta.org</h1><svg width="746px" height="523px" viewBox="-130 -44 746 523" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <defs>
+        <rect x="85" y="-43" width="530" height="288" id="rect-1"></rect>
+        <rect x="220" y="262" width="351" height="216" id="rect-2"></rect>
+        <rect x="-129" y="39" width="335" height="413" id="rect-3"></rect>
+    </defs>
+    <g id="salesforce" stroke="none" fill="none">
+        <image x="85" y="-43" width="530" height="288" xlink:href="../images/salesforce.png"></image>
+        <use stroke="#000000" stroke-width="1" xlink:href="#rect-1"></use>
+    </g>
+    <g id="vols" stroke="none" fill="none">
+        <image x="220" y="262" width="351" height="216" xlink:href="../images/vols.png"></image>
+        <use stroke="#000000" stroke-width="1" xlink:href="#rect-2"></use>
+    </g>
+    <g id="wta.org" stroke="none" fill="none">
+        <image x="-129" y="39" width="335" height="413" xlink:href="../images/wta.org.png"></image>
+        <use stroke="#000000" stroke-width="1" xlink:href="#rect-3"></use>
+    </g>
+</svg>
+<div class="notes"><p>But that's just part of their technology. Before this project, WTA's stack included:
+- wta.org
+- A Salesforce instance, used by staff to track donors, members, volunteers, etc.
+- A Volunteer Management System (VMS) which was a decade-old pile of Perl scripts.</p><p>You can guess which part they wanted to replace.</p></div></div><div class="step step-level-1 wide" step="6" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="9600" data-y="0" data-z="0"><h1 id="find-a-work-party">Find a Work Party</h1><img src="images/search_list.png" class="left"></img><img src="images/search_map.png" class="right"></img><div class="notes"><p>Now let me show you the system we built to replace the VMS.</p><p>Volunteers can do faceted search for upcoming work parties,
+and view the results as a list, a map, or a calendar.</p></div></div><div class="step step-level-1" step="7" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="11200" data-y="0" data-z="0"><h1 id="registration">Registration</h1><img src="images/register_1.png" class="left"></img><img src="images/register_2.png" class="right"></img><div class="notes"><p>The system handles registration. You can sign up yourself
+and your friends or family, enter whether you want to carpool,
+and create an account for wta.org. It handles payment and sends
+notifications.</p></div></div><div class="step step-level-1 wide" step="8" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="12800" data-y="0" data-z="0"><h1 id="crew-leader-tools">Crew Leader Tools</h1><img src="images/crew_roster.png" class="left"></img><img src="images/crew_message_board.png" class="right"></img><div class="notes"><p>There are also tools for the leaders of volunteer crews.
+Crew leaders can view a roster of who is attending and their
+skills and level of experience. And they can send messages
+to the crew.</p></div></div><div class="step step-level-1" step="9" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="14400" data-y="0" data-z="0"><h1 id="reports">Reports</h1><img src="images/summary_reports.png"></img><div class="notes"><p>Crew leaders, WTA staff and the organizations that manage public lands
+can also access reports of work that was completed.</p></div></div><div class="step step-level-1" step="10" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="16000" data-y="0" data-z="0"><h1 id="which-tool">Which tool?</h1><img src="images/plone.png" class="left"></img><img src="images/pyramid_logo.png" class="right"></img><img src="images/salesforce_logo.jpg" class="left"></img><img src="images/react_logo.png" class="right"></img><div class="notes"><p>So the big question was what technology to use.</p><dl><dt>Building the entire thing in Salesforce was an option:</dt><dd><ul><li>but as a completely hosted environment, can be awkward for rapid development of polished UI</li><li>license restrictions mean there's a cost to giving everyone access to it</li></ul></dd><dt>Plone also would have been a natural choice:</dt><dd><ul><li>The users are already here</li><li>But VMS wasn't going to benefit a lot from Plone's content-centric features,
+and there's overhead to building on top of a large system.</li></ul></dd></dl></div></div><div class="step step-level-1" step="11" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="17600" data-y="0" data-z="0"><h1 id="architecture">Architecture</h1>
+<svg width="716px" height="418px" viewBox="20 95 716 418" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 40.3 (33839) - http://www.bohemiancoding.com/sketch -->
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <rect id="path-1" x="99" y="111" width="636" height="76" rx="8"></rect>
+        <mask id="mask-2" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="0" y="0" width="636" height="76" fill="white">
+            <use xlink:href="#path-1"></use>
+        </mask>
+        <rect id="path-3" x="111" y="96" width="329" height="384" rx="8"></rect>
+        <mask id="mask-4" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="0" y="0" width="329" height="384" fill="white">
+            <use xlink:href="#path-3"></use>
+        </mask>
+        <rect id="path-5" x="452" y="96" width="273" height="384" rx="8"></rect>
+        <mask id="mask-6" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="0" y="0" width="273" height="384" fill="white">
+            <use xlink:href="#path-5"></use>
+        </mask>
+    </defs>
+    <text id="Redis" stroke="none" fill="none" font-family="sans-serif" font-size="14" font-weight="normal">
+        <tspan x="125" y="246" fill="#000000">Redis</tspan>
+    </text>
+    <text id="ElasticSearch" stroke="none" fill="none" font-family="sans-serif" font-size="14" font-weight="normal">
+        <tspan x="124" y="283" fill="#000000">ElasticSearch</tspan>
+    </text>
+    <image id="pyramid_logo" stroke="none" fill="none" x="310" y="226" width="93" height="90" xlink:href="../images/pyramid_logo.png"></image>
+    <image id="react_logo" stroke="none" fill="none" x="293" y="117" width="122" height="64" xlink:href="../images/react_logo.png"></image>
+    <image id="plone" stroke="none" fill="none" x="479" y="232" width="219" height="57" xlink:href="../images/plone.png"></image>
+    <image id="salesforce_logo" stroke="none" fill="none" x="289" y="346" width="134" height="134" xlink:href="../images/salesforce_logo.jpg"></image>
+    <path d="M358,169 L358,212" id="Line" stroke="#979797" stroke-width="2" stroke-linecap="square" fill="none"></path>
+    <path d="M316.5,241.5 L193.5,241.5" id="Line" stroke="#979797" stroke-width="1" stroke-linecap="square" fill="none"></path>
+    <path d="M303.5,277.5 L238.5,277.5" id="Line" stroke="#979797" stroke-width="1" stroke-linecap="square" fill="none"></path>
+    <use id="Rectangle" stroke="#979797" mask="url(#mask-2)" stroke-width="2" fill="none" xlink:href="#path-1"></use>
+    <use id="Rectangle-2" stroke="#979797" mask="url(#mask-4)" stroke-width="2" fill="none" xlink:href="#path-3"></use>
+    <use id="Rectangle-3" stroke="#979797" mask="url(#mask-6)" stroke-width="2" fill="none" xlink:href="#path-5"></use>
+    <path d="M357.5,319.5 L357.5,358.5" id="Line" stroke="#979797" stroke-width="1" stroke-linecap="square" fill="none"></path>
+    <path d="M605.5,151.5 L605.5,210.5" id="Line" stroke="#979797" stroke-width="1" stroke-linecap="square" fill="none"></path>
+    <text id="Browser" stroke="none" fill="none" font-family="sans-serif" font-size="18" font-weight="bold">
+        <tspan x="20" y="153" fill="#000000">Browser</tspan>
+    </text>
+    <text id="Server" stroke="none" fill="none" font-family="sans-serif" font-size="18" font-weight="bold">
+        <tspan x="24" y="330" fill="#000000">Server</tspan>
+    </text>
+    <text id="VMS" stroke="none" fill="none" font-family="sans-serif" font-size="18" font-weight="bold">
+        <tspan x="258" y="509" fill="#000000">VMS</tspan>
+    </text>
+    <text id="CMS" stroke="none" fill="none" font-family="sans-serif" font-size="18" font-weight="bold">
+        <tspan x="576" y="509" fill="#000000">CMS</tspan>
+    </text>
+</svg>
+<div class="notes"><p>This is the architecture we chose. VMS (left) is separate from the website (right).</p><ul><li><dl><dt>Salesforce</dt><dd><ul><li>main data store</li><li>primary UI for staff entering work parties</li></ul></dd></dl></li><li><dl><dt>Pyramid app</dt><dd><ul><li>controls access to records</li><li>provides faceted search using elasticsearch</li><li>polished UI for volunteers (ReactJS)</li></ul></dd></dl></li><li><dl><dt>Plone</dt><dd><ul><li>authentication</li><li>user profile ("My Backpack")</li></ul></dd></dl></li></ul></div></div><div class="step step-level-1" step="12" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="19200" data-y="0" data-z="0"><img src="images/pyramid_logo.png"></img><div class="notes"><p>Let's talk about what I like about Pyramid.</p></div></div><div class="step step-level-1" step="13" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="20800" data-y="0" data-z="0"><h1 id="view-configuration">View configuration</h1><pre class="highlight code python"><span class="kn">from</span> <span class="nn">pyramid.view</span> <span class="kn">import</span> <span class="n">view_config</span>
+
+<span class="nd">@view_config</span><span class="p">(</span>
+    <span class="n">context</span><span class="o">=</span><span class="n">WorkParty</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'register'</span><span class="p">,</span>
+    <span class="n">renderer</span><span class="o">=</span><span class="s1">'register.pt'</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">register_form</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+    <span class="c1"># ...</span>
+
+<span class="nd">@view_config</span><span class="p">(</span>
+    <span class="n">context</span><span class="o">=</span><span class="n">WorkParty</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">'register'</span><span class="p">,</span>
+    <span class="n">request_method</span><span class="o">=</span><span class="s1">'POST'</span><span class="p">,</span> <span class="n">check_csrf</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">permission</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">register</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+    <span class="c1"># ...</span></pre><div class="notes"><p>A lot of the app was building JSON endpoints for the React frontend
+to interact with. I won't call it REST because it was more RPC-style.</p><p>Pyramid's view configuration is nice because you can use whatever you
+want to determine if the view matches. Here we have two views with the
+same context and name, but one only matches POST requests for when the
+form is submitted.</p><p>I like using the <tt>view_config</tt> decorator because it keeps view
+configuration next to the code.</p></div></div><div class="step step-level-1" step="14" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="22400" data-y="0" data-z="0"><h1 id="no-globals">No globals</h1><pre class="highlight code python"> <span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">global_config</span><span class="p">,</span> <span class="o">**</span><span class="n">local_config</span><span class="p">):</span>
+     <span class="n">config</span> <span class="o">=</span> <span class="n">Configurator</span><span class="p">(</span><span class="n">settings</span><span class="o">=</span><span class="n">global_config</span><span class="p">)</span>
+     <span class="n">config</span><span class="o">.</span><span class="n">scan</span><span class="p">(</span><span class="s1">'.views'</span><span class="p">)</span>
+     <span class="k">return</span> <span class="n">config</span><span class="o">.</span><span class="n">make_wsgi_app</span><span class="p">()</span></pre><div class="notes"><p>But unlike some microframeworks, Pyramid is careful to avoid storing
+things in globals, which is good because it makes it possible to
+test part of the system or run multiple copies of the app in the same
+process.</p><p>The view_config decorator we just saw stores some metadata,
+but doesn't actually register the view.
+That doesn't happen until our entry point creates a Configurator
+and scans the views module.</p></div></div><div class="step step-level-1" step="15" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="24000" data-y="0" data-z="0"><h1 id="testable-views">Testable views</h1><pre class="highlight code python"><span class="nd">@view_config</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s1">'register'</span><span class="p">,</span> <span class="n">renderer</span><span class="o">=</span><span class="s1">'json'</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">register</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s1">'title'</span><span class="p">:</span> <span class="s1">'Register'</span>
+    <span class="p">}</span></pre><div class="notes"><p>Avoiding globals isn't the only thing that makes Pyramid testable.
+Its views are also designed to return a Python dictionary rather
+than an HTTP response, so it's easier to make assertions.</p><p>Each view can have a renderer which takes care of turning the dict
+into the response in a particular format.</p></div></div><div class="step step-level-1 centered" step="16" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="25600" data-y="0" data-z="0"><h1 id="runs-on-python-3">Runs on Python 3</h1><div class="notes"><p>Of course, Pyramid ticks off a few boxes: it runs on Python 3...</p></div></div><div class="step step-level-1 centered" step="17" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="27200" data-y="0" data-z="0"><h1 id="thorough-documentation">Thorough documentation</h1><div class="notes"><p>...and has thorough documentation, including tutorials,
+narrative docs, and reference material.</p></div></div><div class="step step-level-1 centered" step="18" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="28800" data-y="0" data-z="0"><h1 id="the-framework-for-frameworks">The framework for frameworks</h1><div class="notes"><p>For a project like this where we're integrating
+multiple services, we really benefit from
+Pyramid's tools for framework building.</p></div></div><div class="step step-level-1" step="19" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="30400" data-y="0" data-z="0"><h1 id="request-properties">Request properties</h1><p>Example: Access Salesforce client on request</p><pre class="highlight code python"><span class="c1"># In config:</span>
+
+<span class="n">client</span> <span class="o">=</span> <span class="n">SalesforceClient</span><span class="p">(</span><span class="n">settings</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">find_salesforce_client</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">client</span>
+
+<span class="n">config</span><span class="o">.</span><span class="n">add_request_method</span><span class="p">(</span>
+    <span class="n">find_salesforce_client</span><span class="p">,</span> <span class="s1">'salesforce'</span><span class="p">,</span> <span class="n">reify</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="c1"># Now we can get the Salesforce client from any view using:</span>
+<span class="n">request</span><span class="o">.</span><span class="n">salesforce</span></pre><div class="notes"><p>One of those is request properties, which make it easy
+to attach your own tools to the request, for easy access anywhere.</p><p>Here in config code we set up a Salesforce client and
+a function that returns it. We then add that as a request method.
+And now we can use request.salesforce.</p></div></div><div class="step step-level-1" step="20" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="32000" data-y="0" data-z="0"><h1 id="tweens">Tweens</h1><p>Example: Handle SSO param in any request</p><pre class="highlight code python"><span class="k">def</span> <span class="nf">sso_tween_factory</span><span class="p">(</span><span class="n">handler</span><span class="p">,</span> <span class="n">registry</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">sso_tween</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s1">'sso'</span> <span class="ow">in</span> <span class="n">request</span><span class="o">.</span><span class="n">GET</span><span class="p">:</span>
+            <span class="c1"># handle single sign-on...</span>
+        <span class="k">return</span> <span class="n">handler</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">security_tween</span>
+
+<span class="c1"># in config:</span>
+<span class="n">config</span><span class="o">.</span><span class="n">add_tween</span><span class="p">(</span>
+    <span class="s1">'vms.auth.sso_tween_factory'</span><span class="p">,</span> <span class="n">under</span><span class="o">=</span><span class="n">pyramid</span><span class="o">.</span><span class="n">tweens</span><span class="o">.</span><span class="n">INGRESS</span>
+<span class="p">)</span></pre><div class="notes"><p>Tweens make it possible to wrap every request and do custom handling.
+Kind of like publisher events in Zope.
+This code adds a tween that watches for a query string param called
+"sso" in each request, and if it's there it logs you in using that token.
+Otherwise it continues to normal request handling.</p></div></div><div class="step step-level-1" step="21" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="33600" data-y="0" data-z="0"><h1 id="exception-views">Exception views</h1><p>Example: Render exceptions as JSON</p><pre class="highlight code python"><span class="nd">@view_config</span><span class="p">(</span>
+    <span class="n">context</span><span class="o">=</span><span class="ne">Exception</span><span class="p">,</span> <span class="n">accept</span><span class="o">=</span><span class="s1">'application/json'</span><span class="p">,</span>
+    <span class="n">renderer</span><span class="o">=</span><span class="s1">'json'</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">json_exception_view</span><span class="p">(</span><span class="n">exc</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">exc</span><span class="p">))</span>
+    <span class="n">request</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="mi">500</span>
+    <span class="k">return</span> <span class="p">{</span>
+        <span class="s1">'code'</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span>
+        <span class="s1">'title'</span><span class="p">:</span> <span class="n">exc</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span>
+        <span class="s1">'detail'</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">exc</span><span class="p">),</span>
+    <span class="p">}</span></pre><div class="notes"><p>Another thing we did is make sure exceptions render as JSON
+if the browser requested a JSON response.
+Here we register an exception view (like in Zope)
+for any exception if the request's Accept header asked for
+application/json, and return a dict with the error information.</p></div></div><div class="step step-level-1" step="22" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="35200" data-y="0" data-z="0"><h1 id="batteries-available-cheap">Batteries available cheap</h1><ul><li>pyramid_chameleon</li><li>pyramid_layout</li><li>pyramid_cachebust</li><li>pyramid_mailer</li></ul><div class="notes"><p>Pyramid's configuration system makes it possible to have add-ons.
+These are some we used.</p><ul><li>pyramid_chameleon: Chameleon templates</li><li>pyramid_layout: A main template with slots</li><li>pyramid_cachebust: Reference CSS using its last modified time</li><li>pyramid_mailer: Send email transactionally</li></ul></div></div><div class="step step-level-1" step="23" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="36800" data-y="0" data-z="0"><h1 id="special-deployment-bonus">Special deployment bonus!</h1><p>Look ma, no ZODB cache...</p><div class="notes"><ul><li>This is more a property of the app we built
+than a general benefit of pyramid, but worth noting
+for Plone developers: the small memory footprint meant
+it was easy to run a bunch of threads to handle
+concurrent submissions of the registration form.
+If we had built this in Plone we would have had trouble
+on the day registration opens, because the calls to
+Salesforce can take a second or two.</li></ul></div></div><div class="step step-level-1 centered" step="24" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="38400" data-y="0" data-z="0"><h1 id="not-perfect">Not perfect</h1><div class="notes"><p>Not everything is perfect in Pyramid.</p><ul><li>CSRF protection isn't automatic
+(but I think Donald Stufft has done some work on that?)</li><li>Exception views are handled by a tween,
+so custom tweens need to be careful about error handling.</li><li>Some assembly required</li><li>Logging tricky to set up</li></ul></div></div><div class="step step-level-1 centered" step="25" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="40000" data-y="0" data-z="0"><h1 id="testing">Testing</h1><div class="notes"><p>Pyramid is pretty agnostic as to what kind of tests you write.
+Here's what we did...</p></div></div><div class="step step-level-1" step="26" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="41600" data-y="0" data-z="0"><p>Unit testing:</p><h1 id="py-test"><tt>py.test</tt></h1><pre class="highlight code python"><span class="k">def</span> <span class="nf">workparty</span><span class="p">():</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s1">'name'</span><span class="p">:</span> <span class="s1">'Tolt-McDonald Park'</span><span class="p">}</span>
+
+<span class="k">def</span> <span class="nf">test_workparty</span><span class="p">(</span><span class="n">workparty</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">workparty</span><span class="p">[</span><span class="s1">'name'</span><span class="p">]</span> <span class="o">==</span> <span class="s1">'Tolt-McDonald Park'</span></pre><div class="notes"><p>We used the py.test framework. People either like or hate it.
+I like it. It's a bit magical, but keeps tests clean and concise.</p><p>It makes it easy to define fixtures (like more granular layers),
+and automatically injects them into tests with matching argument names.
+It also adds magic to Python assertions to return more useful failure messages.</p></div></div><div class="step step-level-1" step="27" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="43200" data-y="0" data-z="0"><p>Building fixtures:</p><h1 id="factory-boy"><tt>factory_boy</tt></h1><pre class="highlight code python"><span class="kn">import</span> <span class="nn">factory</span>
+
+<span class="k">class</span> <span class="nc">WorkPartyFactory</span><span class="p">(</span><span class="n">factory</span><span class="o">.</span><span class="n">BaseDictFactory</span><span class="p">):</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">factory</span><span class="o">.</span><span class="n">Sequence</span><span class="p">(</span>
+        <span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="s1">'Test Work Party {0}'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+    <span class="n">start_date</span> <span class="o">=</span> <span class="n">factory</span><span class="o">.</span><span class="n">Faker</span><span class="p">(</span>
+        <span class="s1">'date_time_between'</span><span class="p">,</span> <span class="n">start_date</span><span class="o">=</span><span class="s1">'+1d'</span><span class="p">,</span> <span class="n">end_date</span><span class="o">=</span><span class="s1">'+30d'</span><span class="p">)</span>
+    <span class="n">work_party_type</span> <span class="o">=</span> <span class="n">factory</span><span class="o">.</span><span class="n">SubFactory</span><span class="p">(</span><span class="n">WorkPartyTypeFactory</span><span class="p">)</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="s1">'Published'</span></pre><div class="notes"><p>Since the real data is in Salesforce, we needed a lot of fake
+data fixtures for writing tests. <tt>factory_boy</tt> makes it
+easy to build fake data. Here, every time this factory
+is instantiated we'll get an incrementing number, a date
+picked from a range, and a subobject using a different factory.</p></div></div><div class="step step-level-1" step="28" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="44800" data-y="0" data-z="0"><p>HTTP-level functional testing:</p><h1 id="webtest"><tt>WebTest</tt></h1><pre class="highlight code python"><span class="k">def</span> <span class="nf">test_search_view</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">indexed_wp</span><span class="p">):</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">'/workparties.json'</span><span class="p">)</span><span class="o">.</span><span class="n">json</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="s1">'results'</span><span class="p">])</span> <span class="o">==</span> <span class="mi">1</span></pre><div class="notes"><p>For testing functionality at the HTTP level, I recommend WebTest.
+It wraps a WSGI app and provides an HTTP-like API.</p></div></div><div class="step step-level-1" step="29" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="46400" data-y="0" data-z="0"><p>In-browser functional testing:</p><h1 id="pytest-bdd-behaving"><tt>pytest-bdd</tt> + <tt>behaving</tt></h1><pre class="highlight code">@usefixtures(indexed_wp)
+Feature: Work Party page
+
+    Scenario: Navigate to work party via search result list
+        When I visit "/"
+        And I click the link with text that contains "Test Work Party"
+        Then I should see "JOIN WORK PARTY" within 15 seconds</pre><div class="notes"><p>And for tests in the browser we used pytest-bdd and behaving.
+pytest-bdd lets you write tests in this style
+(which should remind you of robotframework)
+and behaving provides a set of steps that control a browser via selenium.</p></div></div><div class="step step-level-1" step="30" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="48000" data-y="0" data-z="0"><p>Load testing:</p><h1 id="locust-io">locust.io</h1><img src="images/locust.io.png"></img><div class="notes"><p>We wanted to make sure that the system would hold up on the day
+when registration opens and many people try to sign up in the first ten minutes.
+We used a load testing tool called locust.io.
+You write simple Python code to load URLs,
+and it takes care of firing up workers and measuring how it performs.</p></div></div><div class="step step-level-1" step="31" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="49600" data-y="0" data-z="0"><img src="images/react_logo.png"></img><div class="notes"><p>Let's shift gears and talk about ReactJS.</p></div></div><div class="step step-level-1" step="32" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="51200" data-y="0" data-z="0"><h1 id="react">React</h1><pre class="highlight code">class Button extends React.Component {
+    render () {
+        return &lt;button onClick={this.click}&gt;{this.props.label}&lt;/button&gt;;
+    }
+
+    click () {
+        alert('clicked!');
+    }
+}
+
+ReactDOM.render(
+    &lt;Button label="Click me!" /&gt;,
+    document.getElementById('body')
+);</pre><div class="notes"><p>React is a system for structuring your front-end code
+into components.</p><p>It encourages using a syntax called JSX which lets you mix
+HTML-like markup in with Javascript code.</p><p>So here we define a "Button" component which accepts a label
+property and renders an HTML button element. It also handles
+a click event on that button. At the bottom, we tell React
+to build a Button with the label "Click me!", then render
+it to the page body.</p><p>So, what's the appeal? The first reaction to React is often...</p></div></div><div class="step step-level-1" step="33" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="52800" data-y="0" data-z="0"><div class="line-block"><br></br></div><h1 id="ew-you-got-html-in-my-javascript">Ew, you got HTML in my Javascript!</h1><div class="line-block"><br></br></div><h1 id="ew-you-got-javascript-in-my-html">Ew, you got Javascript in my HTML!</h1><div class="notes"><p>In many ways, I think this is like whitespace in Python.
+Don't worry, you'll get over it.
+And it can be nice to have your markup close to your code.</p><p>Of course, there are times when you do have separate concerns
+(for example, you want to provide the ability to override a template,
+like we do in the Plone mockup). It would be nice if React had
+better support for this.</p><p>And there's added complexity to compiling JSX to Javascript.
+But if you want to write ES6 you have to deal with that anyway.</p><p>Also, because JSX compiles to Javascript,
+it has subtle differences from real HTML.
+You have to say className instead of class,
+because class is a Javascript keyword.
+And that means you can't just copy and paste
+HTML from a designer into React without some work.</p><p>I've actually started playing around with writing a template
+engine that takes templates in Jinja2 syntax and renders them
+as a React virtual DOM.</p></div></div><div class="step step-level-1 full" step="34" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="54400" data-y="0" data-z="0"><img src="images/react.svg"></img><div class="notes"><p>People get excited about how React helps frontend performance,
+and there are a bunch of complicated things you can learn about
+how to structure your components to make it even faster.</p><p>What you need to know is: When React renders components,
+it constructs plain Javascript objects representing DOM elements.
+It then compares them to the real DOM and updates only what
+changed. This makes it fast compared to replacing all the DOM elements
+on every render.</p><p>In most cases, this is going to be enough. You can do more
+so that React knows when it doesn't even need to bother calling your render
+function, but unless you're updating something every second
+it's probably not going to matter.</p></div></div><div class="step step-level-1 centered" step="35" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="56000" data-y="0" data-z="0"><h1 id="isomorphic-rendering">Isomorphic rendering</h1><div class="notes"><p>React has support for "isomorphic rendering"
+which is a fancy way of saying that you can render your page
+on either the server side or client side.</p><p>For an app with a Python backend you can write Python views
+that return JSON, and then pipe that to a Javascript process
+for rendering. (See Laurence Rowe's subprocess-middleware.)</p><p>This can be important for a public-facing, content-centric site
+to make sure it can be easily indexed.
+(Google tries to index client-side rendered pages,
+but it's not always successful, and it's not the only search engine.)</p><p>But for a site with private pages, it's not worth the effort.</p></div></div><div class="step step-level-1 centered" step="36" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="57600" data-y="0" data-z="0"><h1 id="focus-on-what-is-displayed-not-how">Focus on what is displayed, not how</h1><div class="notes"><p>As far as I'm concerned, the big win with React is that it's declarative.
+There is a clear representation of the state of the application,
+and when you update that state it will take care of automatically
+and efficiently updating where that state is reflected
+in the rendered page.</p><p>For me this is a revelation almost as momentous as when I
+learned how to use jquery selectors.</p></div></div><div class="step step-level-1" step="37" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="59200" data-y="0" data-z="0"><p>JQuery:</p><h1 id="imperative-counterexample">Imperative counterexample</h1><pre class="highlight code javascript"><span class="kd">var</span> <span class="nx">$form</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">'form'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">$checkbox</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">'#my-checkbox'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">$section</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="s1">'#my-form-section'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">update_form</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">$section</span><span class="p">.</span><span class="nx">toggleClass</span><span class="p">(</span><span class="s1">'on'</span><span class="p">,</span> <span class="nx">$checkbox</span><span class="p">.</span><span class="nx">prop</span><span class="p">(</span><span class="s1">'checked'</span><span class="p">));</span>
+<span class="p">};</span>
+<span class="nx">$</span><span class="p">(</span><span class="s1">'input,select'</span><span class="p">,</span> <span class="nx">$form</span><span class="p">).</span><span class="nx">click</span><span class="p">(</span><span class="nx">update_form</span><span class="p">);</span>
+<span class="nx">update_form</span><span class="p">();</span></pre><div class="notes"><p>I can't count how many times I've written code like this with jquery.
+It's a mess.
+We declare an "update_form" function
+which checks the state of a checkbox
+and toggles a section of the form.
+Then we make sure update_form runs when the checkbox is clicked.
+Then we run it to make sure things are updated when the page loads.</p><p>There's no central place where we keep track of the state of the app,
+and that makes it hard to keep track of what needs to be updated when.</p><p>With React, we would make clicking the checkbox update the state of the form,
+and the section component based on that form state would automatically re-render.</p><p>Of course, React isn't the only frontend framework that supports
+automatic data binding. If you've got one you like, I'm not sure
+it's worth switching to React. But if you've got performance problems,
+or are starting something new, React is worth considering.</p></div></div><div class="step step-level-1" step="38" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="60800" data-y="0" data-z="0"><h1 id="giving-react-partial-control">Giving React partial control</h1><pre class="highlight code html"><span class="p">&lt;</span><span class="nt">div</span> <span class="na">data-component</span><span class="o">=</span><span class="s">"RegistrationStatus"</span> <span class="na">data-props</span><span class="o">=</span><span class="s">"${props}"</span> <span class="p">/&gt;</span></pre><div class="notes"><p>I'm going to shift gears and talk about
+how we made the React frontend work along with the Pyramid backend.</p><p>React is often used in the context of a single-page app
+where it is responsible for rendering the entire page.</p><p>But we had cases where we only wanted to render certain
+pieces using React components. (The work party view,
+for example.)</p><p>We used this pattern for inserting React components
+declaratively without needing to invoke the ReactDOM.render
+API. There is a script which scans for the data-component divs
+and renders the component into them.</p><p>The props are built as a dict in Python,
+then rendered to JSON to be inserted in the data-props
+attribute in a chameleon template.</p><p>Looks like a pattern, right?</p></div></div><div class="step step-level-1 centered" step="39" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="62400" data-y="0" data-z="0"><h1 id="accessing-the-session">Accessing the session</h1><div class="notes"><p>We had cases where our frontend components needed to know
+something about the current user.</p><p>By default Pyramid stores sessions in a signed cookie.
+When a user logs in we store some user info in the session.
+The script that loads the react components reads this info
+from the cookie and adds it to the component's props,
+so we can use <tt>this.props.user</tt>.</p><p>We aren't validating the signature, so this info can
+be tampered with by the user. So don't rely on it for access
+control; you still need to authenticate and validate your requests
+on the server side.</p></div></div><div class="step step-level-1" step="40" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="64000" data-y="0" data-z="0"><h1 id="translations">Translations</h1><div class="notes"><ul><li>load as JSON via AJAX</li><li>pass as part of <tt>props</tt> to top-level React component</li></ul></div></div><div class="step step-level-1 centered" step="41" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="65600" data-y="0" data-z="0"><h1 id="integrating-with-plone">Integrating with Plone</h1><div class="notes"><p>Finally, let me talk about a few details of where the VMS system
+integrated with Plone.</p></div></div><div class="step step-level-1 wide" step="42" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="67200" data-y="0" data-z="0"><h1 id="shared-navigation">Shared navigation</h1><img src="images/nav.png"></img><div class="notes"><p>To share navigation between the two sites,
+we added a browser view to the Plone site
+which returns the nav menu items as JSON.</p><p>The VMS app then renders these items using similar markup and styles.</p><p>This reminds me of the Javascript Plone client!</p></div></div><div class="step step-level-1" step="43" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="68800" data-y="0" data-z="0"><h1 id="cross-origin-resource-sharing-cors">Cross-origin resource sharing (CORS)</h1><ul><li><tt>Access-Control-Allow-Origin</tt></li><li><tt>Vary: Origin</tt></li><li><tt>Access-Control-Allow-Credentials</tt></li><li><tt>withCredentials</tt></li><li><tt>OPTIONS</tt></li></ul><div class="notes"><p>When providing a JSON API for use from the client side
+on a different domain, you have to know about CORS headers.</p><p>Use plone.rest</p></div></div><div class="step step-level-1" step="44" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="70400" data-y="0" data-z="0"><p>Single sign-on:</p><h1 id="login">Login</h1><img src="images/login_flow.svg"></img></div><div class="step step-level-1" step="45" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="72000" data-y="0" data-z="0"><p>Single sign-on:</p><h1 id="logout">Logout</h1><img src="images/logout_flow.svg"></img></div><div class="step step-level-1" step="46" data-rotate-x="0" data-rotate-y="0" data-rotate-z="0" data-scale="1" data-x="73600" data-y="0" data-z="0"><h1 id="questions">Questions?</h1><dl><dt>Email:</dt><dd><p><a href="mailto:david@glicksoftware.com">david@glicksoftware.com</a></p></dd><dt>Twitter/IRC:</dt><dd><p>davisagli</p></dd><dt>Talk feedback:</dt><dd><p>ploneconf.sixfeetup.com</p></dd></dl><img src="images/jazkarta_logo.png" class="left"></img><img src="images/oddbird_logo.svg" class="left"></img></div></div><div id="hovercraft-help"><table><tr><th>Space</th><td>Forward</td></tr><tr><th>Right, Down, Page Down</th><td>Next slide</td></tr><tr><th>Left, Up, Page Up</th><td>Previous slide</td></tr><tr><th>P</th><td>Open presenter console</td></tr><tr><th>H</th><td>Toggle this help</td></tr></table></div><script type="text/javascript" src="js/impress.js"></script><script type="text/javascript" src="js/impressConsole.js"></script><script type="text/javascript" src="js/hovercraft.js"></script></body></html>

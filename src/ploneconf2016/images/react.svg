@@ -1,0 +1,18 @@
+<svg viewBox="65 11 580 414" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <defs></defs>
+    <text id="the-virtual-DOM" stroke="none" fill="none" transform="translate(268.000000, 140.000000) rotate(-21.000000) translate(-268.000000, -140.000000) " font-family="sans-serif" font-size="15" font-weight="bold">
+        <tspan x="211" y="146" fill="#000000">the virtual DOM</tspan>
+    </text>
+    <text id="immutable.js" stroke="none" fill="none" transform="translate(497.503906, 172.699219) rotate(11.000000) translate(-497.503906, -172.699219) " font-family="sans-serif" font-size="15" font-weight="bold">
+        <tspan x="451.503906" y="178.699219" fill="#000000">immutable.js</tspan>
+    </text>
+    <text id="one-way-data-flow" stroke="none" fill="none" transform="translate(230.114550, 281.516570) rotate(15.000000) translate(-230.114550, -281.516570) " font-family="sans-serif" font-size="15" font-weight="bold">
+        <tspan x="165.11455" y="287.51657" fill="#000000">one-way data flow</tspan>
+    </text>
+    <text id="Redux" stroke="none" fill="none" transform="translate(476.233096, 307.773303) rotate(-22.000000) translate(-476.233096, -307.773303) " font-family="sans-serif" font-size="15" font-weight="bold">
+        <tspan x="453.733096" y="313.773303" fill="#000000">Redux</tspan>
+    </text>
+    <text id="???" stroke="none" fill="none" font-family="sans-serif" font-size="70" font-weight="bold">
+        <tspan x="312" y="252" fill="#000000">??!</tspan>
+    </text>
+</svg>

@@ -1,0 +1,238 @@
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml"><head><title>Custom Plone Forms: Navigating the Labyrinth</title><meta name="generator" content="Hovercraft! 1.0 http://regebro.github.com/hovercraft"></meta><link rel="stylesheet" href="css/hovercraft.css" media="all"></link><link rel="stylesheet" href="css/impressConsole.css" media="all"></link><link rel="stylesheet" href="css/highlight.css" media="all"></link><link rel="stylesheet" href="slideshow.css" media="screen,projection"></link></head><body class="impress-not-supported"><div id="impress" data-transition-duration="300"><div class="step" step="0" data-x="0" data-y="0"><h1 id="custom-plone-forms-navigating-the-labyrinth">Custom Plone Forms: Navigating the Labyrinth</h1><div class="line-block"><br></br></div><h2 id="david-glick">David Glick</h2><h3 id="plone-symposium-midwest-2013">Plone Symposium Midwest 2013</h3><div class="notes"><ul><li>audience</li><li>introduce myself</li></ul></div></div><div class="step" step="1" data-x="1600" data-y="0"><h1 id="what-is-a-form">What is a form?</h1><p>Structured way of providing information</p><div class="notes"><p>What is a form?</p><p>It's a structured way of entering information.</p></div></div><div class="step" step="2" data-x="3200" data-y="0"><p><img src="1040ez.png" alt="tax-1" width="" height=""></img> vs. <img src="1040.png" alt="tax-2" width="" height=""></img></p><div class="notes"><p>You may recognize this...there's a reason tax forms exist.</p><p>Forms aren't unique to the web or computers,
+but they show up a lot because computers like
+dealing with structured information.</p></div></div><div class="step" step="3" data-x="4800" data-y="0"><h1 id="id1">What is a form?</h1><p>A good user experience for entering information.</p><div class="notes"><p>A good form is optimized for user experience,
+not just ease of processing.</p><p>Input controls, help text, validation, etc
+all give the user clues to help them succeed.</p></div></div><div class="step" step="4" data-x="6400" data-y="0"><img src="turbotax.png" alt="" width="" height=""></img><div class="notes"><p>(turbotax example)</p></div></div><div class="step" step="5" data-x="8000" data-y="0"><h1 id="back-to-the-basics-http">Back to the basics: HTTP</h1><div class="notes"><p>The web is built on HTTP.</p><p>HTTP lets a client (or browser) request a resource,
+then returns a response.</p></div></div><div class="step" step="6" data-x="9600" data-y="0"><h1 id="http-get">HTTP GET</h1><pre class="highlight code">GET /page</pre><div class="notes"><p>What does this do?</p><p>HTTP GET method. Requests the news resource.</p><p>Server should respond with the content of that page
+(or an error code).</p></div></div><div class="step" step="7" data-x="11200" data-y="0"><h1 id="query-string">Query string</h1><pre class="highlight code">GET /search?SearchableText=form+guru</pre><div class="notes"><p>This query searches a Plone site.</p><p>The SearchableText parameter "form guru" is encoded as part of the URL.</p></div></div><div class="step" step="8" data-x="12800" data-y="0"><h1 id="http-post">HTTP POST</h1><pre class="highlight code">POST /Plone/@@register
+
+form.fullname=David+Glick&amp;form.username=davisagli&amp;form.email=dglick%40gmail.com&amp;form.password=foobar&amp;form.password_ctl=foobar&amp;_authenticator=1e37eda76bec66dbbb32d854d461aada6669a417&amp;form.actions.register=Register</pre><div class="notes"><p>HTTP supports multiple verbs.</p><p>The other common one is POST,
+which signifies a request that intends to make a change
+to the remote system instead of just retrieving data.</p><p>(Have you resubmitted a form and gotten a warning from
+your browser? It knows to do that because it's using
+a POST request, and it doesn't want to make the change
+twice unless you insist.)</p><p>This example registers a new Plone user,
+if the site has registration enabled.</p><p>The parameters are encoded similarly to a query string,
+but they are in the body of the request, and can be
+longer.</p></div></div><div class="step" step="9" data-x="14400" data-y="0"><h1 id="html-forms">HTML forms</h1><pre class="highlight code html"><span class="nt">&lt;form</span>
+  <span class="na">action=</span><span class="s">"newsletter_signup"</span>
+  <span class="na">method=</span><span class="s">"POST"</span><span class="nt">&gt;</span>
+
+  <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"email"</span> <span class="na">placeholder=</span><span class="s">"Email"</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"submit"</span> <span class="na">value=</span><span class="s">"Sign up"</span> <span class="nt">/&gt;</span>
+
+<span class="nt">&lt;/form&gt;</span></pre><form
+  action="newsletter_signup"
+  method="POST">
+
+  <input type="email" placeholder="Email" />
+  <input type="submit" value="Sign up" />
+
+</form><div class="notes"><p>Unfortunately, I don't have enough
+minions to delegate my manual HTTP POSTing.</p><p>Fortunately, the HTML spec anticipated this,
+and browsers understand HTML forms.</p><p>Here's a simple one that will POST an
+email field to the newsletter_signup URL.</p><p>(Point out the pieces.)</p><p>The browser automatically builds the request body.</p></div></div><div class="step" step="10" data-x="16000" data-y="0"><h1 id="handling-form-input">Handling form input</h1><pre class="highlight code python"><span class="kn">from</span> <span class="nn">Products.Five</span> <span class="kn">import</span> <span class="n">BrowserView</span>
+<span class="kn">from</span> <span class="nn">Products.Five.pagetemplatefile</span> <span class="kn">import</span> <span class="n">ViewPageTemplateFile</span>
+
+<span class="k">class</span> <span class="nc">SignUpForm</span><span class="p">(</span><span class="n">BrowserView</span><span class="p">):</span>
+    <span class="n">template</span> <span class="o">=</span> <span class="n">ViewPageTemplateFile</span><span class="p">(</span><span class="s">'signup_form.pt'</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="s">'form.submitted'</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">:</span>
+            <span class="c"># (store the email here)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">template</span><span class="p">()</span></pre><div class="notes"><p>Let's write some basic Zope-specific code that
+handles submitting this form.</p><p>This is a Zope browser view which we're going to
+assume is registered to be accessible as newsletter_signup.</p><p>It's a common Zope pattern to have a form that submits
+to its own URL. We determine whether it was submitted by
+looking for a 'form.submitted' token in the request.
+Where did that come from?</p></div></div><div class="step" step="11" data-x="17600" data-y="0"><h1 id="determining-whether-the-form-was-submitted">Determining whether the form was submitted</h1><pre class="highlight code html"><span class="nt">&lt;form</span>
+  <span class="na">action=</span><span class="s">"newsletter_signup"</span>
+  <span class="na">method=</span><span class="s">"POST"</span><span class="nt">&gt;</span>
+
+  <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"email"</span> <span class="na">placeholder=</span><span class="s">"Email"</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"submit"</span> <span class="na">value=</span><span class="s">"Sign up"</span> <span class="nt">/&gt;</span>
+<span class="hl">  </span><span class="hl nt">&lt;input</span><span class="hl"> </span><span class="hl na">type=</span><span class="hl s">"hidden"</span><span class="hl"> </span><span class="hl na">name=</span><span class="hl s">"form.submitted"</span><span class="hl"> </span><span class="hl na">value=</span><span class="hl s">"1"</span><span class="hl"> </span><span class="hl nt">/&gt;</span><span class="hl">
+</span>
+<span class="nt">&lt;/form&gt;</span></pre><div class="notes"><p>We add "form.submitted" as a hidden form input.</p><p>(We could also give the submit button a name
+and check for it in the request, but then our
+check will fail if someone presses the Enter key
+instead of clicking the button.)</p></div></div><div class="step" step="12" data-x="19200" data-y="0"><h1 id="validating-input">Validating input</h1><pre class="highlight code python"><span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">errors</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="s">'form.submitted'</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">:</span>
+<span class="hl">        </span><span class="hl k">if</span><span class="hl"> </span><span class="hl s">'email'</span><span class="hl"> </span><span class="hl ow">not</span><span class="hl"> </span><span class="hl ow">in</span><span class="hl"> </span><span class="hl bp">self</span><span class="hl o">.</span><span class="hl n">request</span><span class="hl o">.</span><span class="hl n">form</span><span class="hl p">:</span><span class="hl">
+</span><span class="hl">            </span><span class="hl n">errors</span><span class="hl o">.</span><span class="hl n">append</span><span class="hl p">(</span><span class="hl s">'Please enter your email.'</span><span class="hl p">)</span><span class="hl">
+</span>
+<span class="hl">        </span><span class="hl k">if</span><span class="hl"> </span><span class="hl ow">not</span><span class="hl"> </span><span class="hl n">errors</span><span class="hl p">:</span><span class="hl">
+</span>            <span class="c"># (store the email here)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">XXX</span>
+
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">template</span><span class="p">(</span><span class="n">errors</span><span class="o">=</span><span class="n">errors</span><span class="p">)</span></pre><div class="notes"><p>Of course, we don't want to sign up the user
+unless they actually entered an email. So we
+need to do validation of the input.</p><p>In real life we'd also check that it's a valid
+email address!</p><p>HTML has some support for client-side validation,
+but it's important to do server-side too,
+because you can't assume someone's using a
+well-behaved browser.</p></div></div><div class="step" step="13" data-x="20800" data-y="0"><h1 id="displaying-errors">Displaying errors</h1><pre class="highlight code html"><span class="nt">&lt;form</span>
+  <span class="na">action=</span><span class="s">"newsletter_signup"</span>
+  <span class="na">method=</span><span class="s">"POST"</span><span class="nt">&gt;</span>
+
+<span class="hl">  </span><span class="hl nt">&lt;ul</span><span class="hl"> </span><span class="hl na">tal:condition=</span><span class="hl s">"options/errors|nothing"</span><span class="hl nt">&gt;</span><span class="hl">
+</span><span class="hl">    </span><span class="hl nt">&lt;li</span><span class="hl"> </span><span class="hl na">tal:repeat=</span><span class="hl s">"error options/errors"</span><span class="hl">
+</span><span class="hl">        </span><span class="hl na">tal:content=</span><span class="hl s">"error"</span><span class="hl"> </span><span class="hl nt">/&gt;</span><span class="hl">
+</span><span class="hl">  </span><span class="hl nt">&lt;/ul&gt;</span><span class="hl">
+</span>  <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"email"</span> <span class="na">placeholder=</span><span class="s">"Email"</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"submit"</span> <span class="na">value=</span><span class="s">"Sign up"</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"hidden"</span> <span class="na">name=</span><span class="s">"form.submitted"</span> <span class="na">value=</span><span class="s">"1"</span> <span class="nt">/&gt;</span>
+
+<span class="nt">&lt;/form&gt;</span></pre><div class="notes"><p>Here's some TAL that displays the errors passed into the template.</p><p>In a real form we'd be a bit more sophisticated
+and show the error next to the field it relates to.</p></div></div><div class="step" step="14" data-x="22400" data-y="0"><h1 id="postback">Postback</h1><pre class="highlight code html"><span class="nt">&lt;form</span>
+  <span class="na">action=</span><span class="s">"newsletter_signup"</span>
+  <span class="na">method=</span><span class="s">"POST"</span><span class="nt">&gt;</span>
+
+  <span class="nt">&lt;ul</span> <span class="na">tal:condition=</span><span class="s">"options/errors|nothing"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;li</span> <span class="na">tal:repeat=</span><span class="s">"error options/errors"</span>
+        <span class="na">tal:content=</span><span class="s">"error"</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;/ul&gt;</span>
+  <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"email"</span> <span class="na">placeholder=</span><span class="s">"Email"</span>
+<span class="hl">      </span><span class="hl na">tal:attributes=</span><span class="hl s">"value request/form/email|nothing"</span><span class="hl"> </span><span class="hl nt">/&gt;</span><span class="hl">
+</span>  <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"submit"</span> <span class="na">value=</span><span class="s">"Sign up"</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"hidden"</span> <span class="na">name=</span><span class="s">"form.submitted"</span> <span class="na">value=</span><span class="s">"1"</span> <span class="nt">/&gt;</span>
+
+<span class="nt">&lt;/form&gt;</span></pre><div class="notes"><p>Now that submitting the form might fail with an error,
+we should make sure that the user's input is not lost.</p><p>Here we set the value of the email field based
+on what's in the request.</p></div></div><div class="step" step="15" data-x="24000" data-y="0"><h1 id="redirect-on-success">Redirect on success</h1><pre class="highlight code python"><span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">errors</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="s">'form.submitted'</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s">'email'</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="p">:</span>
+            <span class="n">errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">'Please enter your email.'</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">errors</span><span class="p">:</span>
+            <span class="c"># (store the email here)</span>
+<span class="hl">            </span><span class="hl bp">self</span><span class="hl o">.</span><span class="hl n">request</span><span class="hl o">.</span><span class="hl n">response</span><span class="hl o">.</span><span class="hl n">redirect</span><span class="hl p">(</span><span class="hl s">'thank-you'</span><span class="hl p">)</span><span class="hl">
+</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">template</span><span class="p">(</span><span class="n">errors</span><span class="o">=</span><span class="n">errors</span><span class="p">)</span></pre><div class="notes"><p>Once the user has successfully filled out the form,
+we should redirect them somewhere else.</p><p>This makes sure that if they reload the page,
+they won't inadvertently sign up again.</p></div></div><div class="step" step="16" data-x="25600" data-y="0"><h1 id="a-menagerie-of-form-libraries">A Menagerie of Form Libraries</h1><blockquote><div class="line-block"><br></br><br></br>&#x201C;We will encourage you to develop the three great virtues of a programmer:
+laziness, impatience, and hubris.&#x201D;<br></br><div class="line-block">&#x2014;Larry Wall<br></br></div></div></blockquote><div class="notes"><p>Once developers have written a forms like this,
+they tend to try to find ways to avoid repeating themselves.</p><p>Sometimes they create a library to make it easy
+to reuse these patterns. Over the years there's been a
+proliferation of these.</p></div></div><div class="step" step="17" data-rotate-y="180" data-x="27200" data-y="0"><h1 id="id2">A Menagerie of Form Libraries</h1><ul><li>CMFFormController</li><li>Archetypes</li><li>PloneFormGen</li><li>Formlib</li><li>z3c.form</li><li>Deform</li><li>YAFOWIL</li></ul><div class="notes"><p>And these are just the Zope-specific ones...</p><p>Common uses:
+#. Render an HTML form
+#. Validate input
+#. Execute actions</p></div></div><div class="step" step="18" data-rotate-y="0" data-x="28800" data-y="0"><h1 id="cmfformcontroller">CMFFormController</h1><img src="formcontroller.png" alt="" width="" height=""></img><div class="notes"><p>From the through-the-web coding days of Zope.
+A basic step beyond plain templates and scripts.</p><dl><dt>.cpt</dt><dd><p>Controller Page Template</p></dd><dt>.cpy</dt><dd><p>Controller Python Script</p></dd><dt>.vpy</dt><dd><p>Controller Validator</p></dd></dl><p>.metadata file attaches validators,
+says what to do on success, failure, or other actions</p><p>Evaluation:</p><ul><li>Very hackable TTW -- BUT not real Python, so tooling is hard
+(debugging, version control, etc.)</li><li>Not opinionated about how forms look, totally flexible -- BUT
+doesn't help with the most tedious part of form building.</li></ul></div></div><div class="step" step="19" data-x="30400" data-y="0"><h1 id="validators">Validators</h1><div class="notes"><p>Responsible for doing a particular check on input
+and flagging errors.</p><p>e.g. EmailValidator that can be associated with
+any field that's supposed to ask for an email.</p><p>Might be for a particular field's input,
+or for the form as a whole.</p></div></div><div class="step" step="20" data-x="32000" data-y="0"><h1 id="actions">Actions</h1><div class="notes"><p>Some code that does things when the form is submitted.</p><p>Often connected to a button on the form.</p></div></div><div class="step" step="21" data-x="33600" data-y="0"><h1 id="archetypes">Archetypes</h1><pre class="highlight code python"><span class="n">ATDocumentSchema</span> <span class="o">=</span> <span class="n">ATContentTypeSchema</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="o">+</span> <span class="n">Schema</span><span class="p">((</span>
+    <span class="n">TextField</span><span class="p">(</span><span class="s">'text'</span><span class="p">,</span>
+        <span class="n">required</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+        <span class="n">searchable</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+        <span class="n">primary</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+        <span class="n">storage</span><span class="o">=</span><span class="n">AnnotationStorage</span><span class="p">(</span><span class="n">migrate</span><span class="o">=</span><span class="bp">True</span><span class="p">),</span>
+        <span class="n">validators</span><span class="o">=</span><span class="p">(</span><span class="s">'isTidyHtmlWithCleanup'</span><span class="p">,),</span>
+        <span class="n">default_output_type</span><span class="o">=</span><span class="s">'text/x-html-safe'</span><span class="p">,</span>
+        <span class="n">widget</span><span class="o">=</span><span class="n">RichWidget</span><span class="p">(</span>
+            <span class="n">description</span><span class="o">=</span><span class="s">''</span><span class="p">,</span>
+            <span class="n">label</span><span class="o">=</span><span class="n">_</span><span class="p">(</span><span class="s">u'label_body_text'</span><span class="p">,</span>
+                    <span class="n">default</span><span class="o">=</span><span class="s">u'Body Text'</span><span class="p">),</span>
+            <span class="n">rows</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span>
+        <span class="p">),</span>
+    <span class="p">),</span></pre><div class="notes"><p>The venerable content type system.</p><p>Introduced the idea of a schema.</p><p>Has standard edit form and view for content,
+the info about what fields to include,
+how to display them, how to validate them,
+etc. is all in the schema.</p><p>Pros:</p><ul><li>Good balance between reusability and flexibility.</li></ul><p>Cons:</p><ul><li>Too much magic.</li><li>Forms must be attached to a content item.</li></ul></div></div><div class="step" step="22" data-x="35200" data-y="0"><h1 id="fields">Fields</h1><div class="notes"><p>A form has multiple fields; each collects a piece of information.</p><p>A field has a type, such as a string or a date or a multiple-choice.</p><p>A group of fields form a schema.</p></div></div><div class="step" step="23" data-x="36800" data-y="0"><h1 id="widgets">Widgets</h1><div class="notes"><p>A particular way of presenting and/or accepting input for a field.</p><p>Usually there's a default widget for a particular type of field
+that is well suited to that type. Such as a date picker widget for
+a date field. But they are distinct because:</p><ul><li>Field type with multiple widget options, e.g. Boolean field
+might use a checkbox widget, or a radio widget with yes/no as options.</li><li>Widget type used with multiple field types, e.g. checkbox widget
+used with either boolean field or a multiple choice field.</li></ul></div></div><div class="step" step="24" data-x="38400" data-y="0"><h1 id="ploneformgen">PloneFormGen</h1><img src="pfg.png" alt="" width="" height=""></img><div class="notes"><p>How many of you applied the security patch from last week?</p><p>How many of you still need to? Where's your site? ;-)</p><ul><li>fantastic add-on by Steve McMahon</li><li>lets a non-developer build forms through the web.</li><li>set of common fields</li><li>action adapters (mailer, save data, scripts, etc.)</li><li>uw.pfg.d2c &amp; workflow applications</li></ul><p>Evaluation:</p><ul><li>Great solution for non-developers. Can easily tweak wording, etc.</li><li>Once you need to go beyond what it supports,
+it can be painful. (e.g. collective.megaphone)</li></ul></div></div><div class="step bigcode" step="25" data-x="40000" data-y="0"><h1 id="formlib">Formlib</h1><pre class="highlight code python"><span class="kn">from</span> <span class="nn">Products.CMFDefault.formlib.schema</span> <span class="kn">import</span> <span class="n">ProxyFieldProperty</span>
+<span class="kn">from</span> <span class="nn">five.formlib.formbase</span> <span class="kn">import</span> <span class="n">Form</span>
+<span class="kn">from</span> <span class="nn">zope.formlib</span> <span class="kn">import</span> <span class="n">form</span>
+<span class="kn">from</span> <span class="nn">zope</span> <span class="kn">import</span> <span class="n">schema</span>
+
+<span class="k">class</span> <span class="nc">ISignup</span><span class="p">(</span><span class="n">Interface</span><span class="p">):</span>
+    <span class="n">email</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">TextLine</span><span class="p">(</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="s">u'Email'</span><span class="p">,</span>
+        <span class="n">constraint</span> <span class="o">=</span> <span class="n">isEmail</span><span class="p">,</span>
+    <span class="p">)</span>
+
+<span class="nd">@implementer</span><span class="p">(</span><span class="n">ISignup</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">SignupAdapter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">context</span> <span class="o">=</span> <span class="n">context</span>
+
+    <span class="k">def</span> <span class="nf">_get_email</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">email</span>
+    <span class="k">def</span> <span class="nf">_set_email</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">email</span> <span class="o">=</span> <span class="n">value</span><span class="p">)</span>
+    <span class="n">email</span> <span class="o">=</span> <span class="nb">property</span><span class="p">(</span><span class="n">_get_email</span><span class="p">,</span> <span class="n">_set_email</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">SignupForm</span><span class="p">(</span><span class="n">Form</span><span class="p">):</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="s">u'Sign up'</span>
+    <span class="n">form_fields</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">FormFields</span><span class="p">(</span><span class="n">ISignup</span><span class="p">)</span></pre><div class="notes"><p>From the Zope 3 community.</p><p>Concept of data storage via schema adaptation.</p><p>Not really flexible or mature enough.</p><p>Example: uberselectionwidget</p></div></div><div class="step bigcode" step="26" data-x="41600" data-y="0"><h1 id="z3c-form">z3c.form</h1><pre class="highlight code python"><span class="kn">from</span> <span class="nn">plone.autoform.form</span> <span class="kn">import</span> <span class="n">AutoExtensibleForm</span>
+<span class="kn">from</span> <span class="nn">z3c.form</span> <span class="kn">import</span> <span class="n">button</span>
+<span class="kn">from</span> <span class="nn">zope</span> <span class="kn">import</span> <span class="n">Interface</span>
+
+<span class="k">class</span> <span class="nc">ISignup</span><span class="p">(</span><span class="n">Interface</span><span class="p">):</span>
+    <span class="n">email</span> <span class="o">=</span> <span class="n">schema</span><span class="o">.</span><span class="n">TextLine</span><span class="p">(</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="s">u'Email'</span><span class="p">,</span>
+        <span class="n">constraint</span> <span class="o">=</span> <span class="n">isEmail</span><span class="p">,</span>
+    <span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">SignupForm</span><span class="p">(</span><span class="n">AutoExtensibleForm</span><span class="p">):</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="s">u'Sign up'</span>
+    <span class="n">schema</span> <span class="o">=</span> <span class="n">ISignup</span>
+
+    <span class="nd">@button.buttonAndHandler</span><span class="p">(</span><span class="s">u'Sign up'</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">handleSignup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">action</span><span class="p">):</span>
+        <span class="n">data</span><span class="p">,</span> <span class="n">errors</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">extractForm</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">errors</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="c"># do signup here</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">redirect</span><span class="p">(</span><span class="s">'thank-you'</span><span class="p">)</span></pre><div class="notes"><p>Modern form library used by the Zope community.
+Dexterity is based on it.</p><p>Schema-driven, but doesn't look that different from
+handling a totally custom form.</p><p>Still expects an adapter to get/set data (not shown),
+but there's a way to return an alternate context which can
+be a dict.</p><p>Pro: Heavy use of adapter pattern makes it easy to override
+specific bits, define sitewide policy.</p><p>Con: Heavy use of adapter pattern, test-based documentation
+make it hard to learn.</p><p>Look at plone.autoform, schema-based forms manual
+on developer.plone.org.</p></div></div><div class="step" step="27" data-x="43200" data-y="0"><h1 id="other-libraries">Other libraries</h1><ul><li>Deform</li><li>YAFOWIL</li></ul><div class="notes"><p>Deform:</p><ul><li>from Pyramid ecosystem</li><li>uses its own schema format (colander) and serialization (peppercorn)</li><li>can use in Zope with collective.deform</li></ul><p>YAFOWIL:</p><ul><li>"Yet Another Form Widget Library"</li><li>from BlueDynamics Alliance</li><li>can use in Plone with yafowil.plone</li></ul></div></div><div class="step full" step="28" data-x="44800" data-y="0"><img src="library_use.png" alt="" width="" height=""></img><div class="notes"><p>Point out major epochs.</p><p>Recent use of z3c.form and working on moving more stuff to it.
+Consistency is good for integrators.</p></div></div><div class="step" step="29" data-x="46400" data-y="0"><h1 id="my-recommendation">My recommendation</h1><p>Learn enough about PloneFormGen and z3c.form to be dangerous</p><div class="notes"><p>...</p><p>If you get stuck, ask questions. Sometimes there are good
+ways to do things that are not obvious.</p><p>For example...</p></div></div><div class="step bigcode" step="30" data-x="48000" data-y="0"><h1 id="z3c-form-with-a-custom-template">z3c.form with a custom template</h1><p>signup_form.py:</p><pre class="highlight code python"><span class="kn">from</span> <span class="nn">Products.Five.pagetemplatefile</span> <span class="kn">import</span> <span class="n">ViewPageTemplateFile</span>
+
+<span class="k">class</span> <span class="nc">SignupForm</span><span class="p">(</span><span class="n">form</span><span class="o">.</span><span class="n">Form</span><span class="p">):</span>
+<span class="hl">    </span><span class="hl n">template</span><span class="hl"> </span><span class="hl o">=</span><span class="hl"> </span><span class="hl n">ViewPageTemplateFile</span><span class="hl p">(</span><span class="hl s">'templates/signup_form.pt'</span><span class="hl p">)</span></pre><p>templates/signup_form.pt:</p><pre class="highlight code xml"><span class="nt">&lt;tal:form</span> <span class="na">metal:use-macro=</span><span class="s">"context/@@ploneform-macros/titlelessform"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;tal:fields</span> <span class="na">metal:fill-slot=</span><span class="s">"fields"</span><span class="nt">&gt;</span>
+
+      Extra stuff before the field...
+
+      <span class="nt">&lt;tal:field</span>
+      <span class="na">tal:replace=</span><span class="s">"structure view/widgets/email/@@ploneform-render-widget"</span> <span class="nt">/&gt;</span>
+
+      ...and after.
+
+    <span class="nt">&lt;/tal:fields&gt;</span>
+<span class="nt">&lt;/tal:form&gt;</span></pre><div class="notes"><p>Still uses z3c.form's widgets, validation, actions.
+But can put the widgets wherever we want.</p></div></div><div class="step" step="31" data-x="49600" data-y="0"><h1 id="id3">My recommendation</h1><p>Learn enough about PloneFormGen and z3c.form to be dangerous</p><p>BUT</p><p>Don't try too hard to make them work for you</p><div class="notes"><p>Writing forms from scratch is not that hard!</p><p>But let me give a few caveats...</p></div></div><div class="step" step="32" data-x="51200" data-y="0"><h1 id="cross-site-request-forgery-csrf">Cross-site request forgery (CSRF)</h1><p>If you're logged into a site,
+another site can trick your browser into submitting forms
+to the first site.</p></div><div class="step" step="33" data-x="52800" data-y="0"><h1 id="preventing-csrf-attacks">Preventing CSRF attacks</h1><pre class="highlight code xml"><span class="nt">&lt;span</span> <span class="na">tal:replace=</span><span class="s">"structure context/@@authenticator/authenticator"</span><span class="nt">/&gt;</span></pre><pre class="highlight code python"><span class="kn">from</span> <span class="nn">plone.protect</span> <span class="kn">import</span> <span class="n">CheckAuthenticator</span>
+
+<span class="k">class</span> <span class="nc">MyForm</span><span class="p">(</span><span class="n">BrowserView</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">CheckAuthenticator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">)</span></pre><div class="notes"><p>An "authenticator" token can be used to guard against CSRF.</p><p>It is generated based on the user id and a secret key.</p><p>If other domains try to load the page in an iframe,
+they still can't access the token due to browser
+cross-site scripting restrictions.</p></div></div><div class="step" step="34" data-x="54400" data-y="0"><h1 id="preventing-csrf-attacks-z3c-form">Preventing CSRF attacks, z3c.form</h1><pre class="highlight code python"><span class="k">class</span> <span class="nc">MyForm</span><span class="p">(</span><span class="n">form</span><span class="o">.</span><span class="n">Form</span><span class="p">):</span>
+    <span class="n">enableCSRFProtection</span> <span class="o">=</span> <span class="bp">True</span></pre><div class="notes"><p>As of recently, plone.app.z3cform has an easy way to
+enable ths for a form.</p></div></div><div class="step" step="35" data-x="56000" data-y="0"><h1 id="dealing-with-character-encoding">Dealing with character encoding</h1><p>On the Python side:</p><pre class="highlight code python"><span class="n">name</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">form</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">'name'</span><span class="p">,</span> <span class="s">''</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s">'utf8'</span><span class="p">)</span></pre><p>Or on the XML side:</p><pre class="highlight code xml"><span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"text"</span> <span class="na">name=</span><span class="s">"name:utf8:ustring"</span> <span class="nt">/&gt;</span></pre><div class="notes"><p>Plone likes to deal witih Unicode, but form input
+comes in as UTF8-encoded strings.</p><p>formlib and z3c.form take care of this automatically.</p><p>If you're doing your own form make sure you test it
+with non-ASCII characters!</p><p>Options:</p><ul><li>Explicitly decode in Python</li><li>Name the HTML input so the Zope marshaller decodes it.</li></ul></div></div><div class="step" step="36" data-x="57600" data-y="0"><h1 id="dealing-with-database-conflicts">Dealing with database conflicts</h1><ul><li>If your transaction hits a ConflictError,
+the Zope publisher will retry the request up to 3 times.</li><li>Be aware of this if your form action calls an external service.</li></ul><div class="notes"><p>If you need to do something in a non-transactional system,
+best to call it from an after-commit hook.</p></div></div><div class="step" step="37" data-x="59200" data-y="0"><h1 id="the-future-of-forms">The future of forms</h1><div class="notes"><p>Trends:</p><ul><li>Client-side rendering</li><li>REST webservice with JSON</li><li>Still need server-side validation</li></ul></div></div><div class="step" step="38" data-x="60800" data-y="0"><h1 id="plone-app-widgets">plone.app.widgets</h1><div class="notes"><p>Effort underway to revamp Plone's widgets.</p><p>Focusing on building functional prototypes in the "mockup" project.</p><p>Using modern Javascript best practices.</p><p>Compatible with Archetypes and Dexterity.</p></div></div><div class="step" step="39" data-x="62400" data-y="0"><h1 id="questions">Questions?</h1></div></div><div id="hovercraft-help"><table><tr><th>Space</th><td>Forward</td></tr><tr><th>Left, Down, Page Down</th><td>Next slide</td></tr><tr><th>Right, Up, Page Up</th><td>Previous slide</td></tr><tr><th>P</th><td>Open presenter console</td></tr><tr><th>H</th><td>Toggle this help</td></tr></table></div><script type="text/javascript" src="js/impress.js"></script><script type="text/javascript" src="js/impressConsole.js"></script><script type="text/javascript" src="js/hovercraft.js"></script></body></html>

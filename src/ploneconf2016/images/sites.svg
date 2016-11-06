@@ -1,0 +1,19 @@
+<svg width="746px" height="523px" viewBox="-130 -44 746 523" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <defs>
+        <rect x="85" y="-43" width="530" height="288" id="rect-1"></rect>
+        <rect x="220" y="262" width="351" height="216" id="rect-2"></rect>
+        <rect x="-129" y="39" width="335" height="413" id="rect-3"></rect>
+    </defs>
+    <g id="salesforce" stroke="none" fill="none">
+        <image x="85" y="-43" width="530" height="288" xlink:href="../images/salesforce.png"></image>
+        <use stroke="#000000" stroke-width="1" xlink:href="#rect-1"></use>
+    </g>
+    <g id="vols" stroke="none" fill="none">
+        <image x="220" y="262" width="351" height="216" xlink:href="../images/vols.png"></image>
+        <use stroke="#000000" stroke-width="1" xlink:href="#rect-2"></use>
+    </g>
+    <g id="wta.org" stroke="none" fill="none">
+        <image x="-129" y="39" width="335" height="413" xlink:href="../images/wta.org.png"></image>
+        <use stroke="#000000" stroke-width="1" xlink:href="#rect-3"></use>
+    </g>
+</svg>

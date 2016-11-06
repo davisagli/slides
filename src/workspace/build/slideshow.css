@@ -1,0 +1,86 @@
+@import url(http://fonts.googleapis.com/css?family=Libre+Baskerville);
+
+.step {
+    width: 800px;
+    padding: 1em;
+}
+.step.full img {
+    width: 100%;
+}
+.step.bigcode {
+    font-size: 80%;
+}
+.step div { margin: auto; }
+
+body {
+    font-size: 200%;
+    text-align: center;
+    font-family: Libre Baskerville;
+}
+
+p {
+    font-size: 125%;
+    font-weight: normal;
+    margin-bottom: 0.3em;
+    margin-top: 0.3em;
+}
+
+h1, h2, h3, h4 {
+    font-weight: normal;
+    margin-bottom: 0.3em;
+    margin-top: 0.3em;
+}
+
+ul {
+    list-style-position: inside;
+}
+
+li {
+    font-size: 125%;
+    font-family: serif;
+    font-weight: normal;
+    text-align: left;
+    text-indent: -1em;
+    line-height: 1.2;
+}
+
+a {
+    text-decoration: none;
+    color: black;
+}
+
+img {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+pre.code {
+    text-align: left;
+    border: solid 1px #ccc;
+    padding: 1em;
+    border-radius: 5px;
+    word-wrap: break-word;
+    background: #ffe;
+}
+
+blockquote {
+    text-align: left;
+    line-height: 1;
+}
+
+input {
+    font-size: 200%;
+}
+
+.hl {
+    background-color: yellow;
+}
+
+.tax-1 {
+    float: left;
+    height: 600px;
+}
+.tax-2 {
+    float: right;
+    height: 600px;
+}

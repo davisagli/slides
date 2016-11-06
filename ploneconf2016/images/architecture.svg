@@ -1,0 +1,49 @@
+
+<svg width="716px" height="418px" viewBox="20 95 716 418" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 40.3 (33839) - http://www.bohemiancoding.com/sketch -->
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <rect id="path-1" x="99" y="111" width="636" height="76" rx="8"></rect>
+        <mask id="mask-2" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="0" y="0" width="636" height="76" fill="white">
+            <use xlink:href="#path-1"></use>
+        </mask>
+        <rect id="path-3" x="111" y="96" width="329" height="384" rx="8"></rect>
+        <mask id="mask-4" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="0" y="0" width="329" height="384" fill="white">
+            <use xlink:href="#path-3"></use>
+        </mask>
+        <rect id="path-5" x="452" y="96" width="273" height="384" rx="8"></rect>
+        <mask id="mask-6" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="0" y="0" width="273" height="384" fill="white">
+            <use xlink:href="#path-5"></use>
+        </mask>
+    </defs>
+    <text id="Redis" stroke="none" fill="none" font-family="sans-serif" font-size="14" font-weight="normal">
+        <tspan x="125" y="246" fill="#000000">Redis</tspan>
+    </text>
+    <text id="ElasticSearch" stroke="none" fill="none" font-family="sans-serif" font-size="14" font-weight="normal">
+        <tspan x="124" y="283" fill="#000000">ElasticSearch</tspan>
+    </text>
+    <image id="pyramid_logo" stroke="none" fill="none" x="310" y="226" width="93" height="90" xlink:href="pyramid_logo.png"></image>
+    <image id="react_logo" stroke="none" fill="none" x="293" y="117" width="122" height="64" xlink:href="react_logo.png"></image>
+    <image id="plone" stroke="none" fill="none" x="479" y="232" width="219" height="57" xlink:href="plone.png"></image>
+    <image id="salesforce_logo" stroke="none" fill="none" x="289" y="346" width="134" height="134" xlink:href="salesforce_logo.png"></image>
+    <path d="M358,169 L358,212" id="Line" stroke="#979797" stroke-width="2" stroke-linecap="square" fill="none"></path>
+    <path d="M316.5,241.5 L193.5,241.5" id="Line" stroke="#979797" stroke-width="1" stroke-linecap="square" fill="none"></path>
+    <path d="M303.5,277.5 L238.5,277.5" id="Line" stroke="#979797" stroke-width="1" stroke-linecap="square" fill="none"></path>
+    <use id="Rectangle" stroke="#979797" mask="url(#mask-2)" stroke-width="2" fill="none" xlink:href="#path-1"></use>
+    <use id="Rectangle-2" stroke="#979797" mask="url(#mask-4)" stroke-width="2" fill="none" xlink:href="#path-3"></use>
+    <use id="Rectangle-3" stroke="#979797" mask="url(#mask-6)" stroke-width="2" fill="none" xlink:href="#path-5"></use>
+    <path d="M357.5,319.5 L357.5,358.5" id="Line" stroke="#979797" stroke-width="1" stroke-linecap="square" fill="none"></path>
+    <path d="M605.5,151.5 L605.5,210.5" id="Line" stroke="#979797" stroke-width="1" stroke-linecap="square" fill="none"></path>
+    <text id="Browser" stroke="none" fill="none" font-family="sans-serif" font-size="18" font-weight="bold">
+        <tspan x="20" y="153" fill="#000000">Browser</tspan>
+    </text>
+    <text id="Server" stroke="none" fill="none" font-family="sans-serif" font-size="18" font-weight="bold">
+        <tspan x="24" y="330" fill="#000000">Server</tspan>
+    </text>
+    <text id="VMS" stroke="none" fill="none" font-family="sans-serif" font-size="18" font-weight="bold">
+        <tspan x="258" y="509" fill="#000000">VMS</tspan>
+    </text>
+    <text id="CMS" stroke="none" fill="none" font-family="sans-serif" font-size="18" font-weight="bold">
+        <tspan x="576" y="509" fill="#000000">CMS</tspan>
+    </text>
+</svg>
